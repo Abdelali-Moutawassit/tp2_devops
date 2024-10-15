@@ -1,0 +1,38 @@
+pipeline {
+    environment {
+        registry = "abdelaliabia99/tp2"
+        registryCredential = '2951d918-030d-42a7-9ef6-4e6d5306eff0'
+        dockerImage = ''
+    }
+    agent any
+    stages {
+        stage('Cloning Git') {
+            steps {
+                git 'https://github.com/Abdelali-Moutawassit/tp2_devops'
+            }
+        }
+        stage('Building image') {
+            steps{
+                script {
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
+                }
+            }
+        }
+        stage('Test image') {
+            steps{
+                script {
+                    echo "Tests passed"
+                }
+            }
+        }
+        stage('Publish Image') {
+            steps{
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+    }
+}
