@@ -8,37 +8,38 @@ pipeline {
     stages {
         stage('Cloning Git') {  
             steps {
-                git 'https://github.com/Abdelali-Moutawassit/tp2_devops'  
+                git 'https://github.com/Abdelali-Moutawassit/tp2_devops'  // Clonage du dépôt Git
             }
         }
-        stage('Building image') { 
-                script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"  
-                }
-            }
-        }
-        stage('Test image') {  
+        stage('Building image') {  // Construction de l'image Docker
             steps {
                 script {
-                    echo "Tests passed"  
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"  // Création de l'image avec le numéro de build
                 }
             }
         }
-        stage('Publish Image') { 
+        stage('Test image') {  // Test de l'image
+            steps {
+                script {
+                    echo "Tests passed"  // Simule le succès des tests
+                }
+            }
+        }
+        stage('Publish Image') {  // Publication de l'image sur DockerHub
             steps {
                 script {
                     docker.withRegistry('', registryCredential) {  
-                        dockerImage.push()
+                        dockerImage.push()  // Pousse l'image vers DockerHub
                     }
                 }
             }
         }
-        stage('Deploy image') { 
+        stage('Deploy image') {  // Déploiement de l'image
             steps {
                 script {
-                    
-                    sh "docker run -d --name tp2_app -p 8080:80 ${registry}:$BUILD_NUMBER"
+                    sh "docker run -d --name tp2_app -p 8080:80 ${registry}:$BUILD_NUMBER"  // Déploiement du conteneur
                 }
             }
         }
     }
+}
