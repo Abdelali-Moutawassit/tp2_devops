@@ -7,12 +7,13 @@ pipeline {
     agent any  
     stages {
         stage('Cloning Git') {  
+            steps {
+                git 'https://github.com/Abdelali-Moutawassit/tp2_devops'  
             }
         }
-        stage('Building image') {  
-            steps {
+        stage('Building image') { 
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER" 
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"  
                 }
             }
         }
@@ -23,19 +24,19 @@ pipeline {
                 }
             }
         }
-        stage('Publish Image') {  
+        stage('Publish Image') { 
             steps {
                 script {
                     docker.withRegistry('', registryCredential) {  
-                        dockerImage.push()  
+                        dockerImage.push()
                     }
                 }
             }
         }
-        stage('Deploy image') {  
+        stage('Deploy image') { 
             steps {
                 script {
-    
+                    
                     sh "docker run -d --name tp2_app -p 8080:80 ${registry}:$BUILD_NUMBER"
                 }
             }
