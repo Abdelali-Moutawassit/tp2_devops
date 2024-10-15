@@ -1,43 +1,46 @@
 pipeline {
     environment {
-        registry = "abdelaliabia99/tp2"  
-        registryCredential = '2951d918-030d-42a7-9ef6-4e6d5306eff0'  
-        dockerImage = ''  
+        registry = "abdelaliabia99/tp2"
+        registryCredential = '2951d918-030d-42a7-9ef6-4e6d5306eff0'
+        dockerImage = ''
     }
-    agent any  
+    agent any
     stages {
-        stage('Cloning Git') {  
+        stage('Cloning Git') {
             steps {
-                git 'https://github.com/Abdelali-Moutawassit/tp2_devops'  // Clonage du dépôt Git
+                git 'https://github.com/Abdelali-Moutawassit/tp2_devops'
             }
         }
-        stage('Building image') {  // Construction de l'image Docker
+        stage('Building image') {
             steps {
                 script {
-                    dockerImage = docker.build registry + ":$BUILD_NUMBER"  // Création de l'image avec le numéro de build
+                    dockerImage = docker.build("${registry}:${BUILD_NUMBER}")
                 }
             }
         }
-        stage('Test image') {  // Test de l'image
+        stage('Test image') {
             steps {
                 script {
-                    echo "Tests passed"  // Simule le succès des tests
+                    echo "Tests passed"
                 }
             }
         }
-        stage('Publish Image') {  // Publication de l'image sur DockerHub
+        stage('Publish Image') {
             steps {
                 script {
-                    docker.withRegistry('', registryCredential) {  
-                        dockerImage.push()  // Pousse l'image vers DockerHub
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
                     }
                 }
             }
         }
-        stage('Deploy image') {  // Déploiement de l'image
+        stage('Deploy Image') {
             steps {
                 script {
-                    sh "docker run -d --name tp2_app -p 8080:80 ${registry}:$BUILD_NUMBER"  // Déploiement du conteneur
+                   
+                    
+                    // Démarrer un nouveau conteneur avec un nom explicite
+                    dockerImage.run("-d --name tp2job3_container -p 9090:80")
                 }
             }
         }
